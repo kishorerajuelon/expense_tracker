@@ -8,6 +8,7 @@ import { useSpeechContext } from '@speechly/react-client';
 import useStyles from './styles';
 import {incomeCategories,expenseCategories} from '../../../constants/categories';
 import formatDate from '../../../utils/formatDate';
+import CustomizedSnackbar from '../../Snackbar/Snackbar';
 
 
 const initialState ={
@@ -22,10 +23,14 @@ const Form = () => {
     const classes = useStyles();
     const {addTransaction} = useContext(ExpenseTrackerContext);
     const {segment} = useSpeechContext();
+    const [open,setOpen] = useState(false);
+
 
     const createTransaction = () => {
+        if(Number.isNaN(Number(formData.amount))|| !formData.date.includes('-')) return;
         const transaction = {...formData, amount: Number(formData.amount),id: uuidv4() }
 
+        setOpen(true);
         addTransaction(transaction);
         setFormData(initialState);
     }
@@ -72,6 +77,7 @@ const Form = () => {
     const selectedCategories = formData.type === 'Income'? incomeCategories : expenseCategories;
     return (
         <Grid container spacing={2}>
+            <CustomizedSnackbar open={open} setOpen={setOpen}/>
             <Grid item xs={12}>
                 <Typography align="center" variant="subtitle2" gutterBottom>
                    {segment && (
